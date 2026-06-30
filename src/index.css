@@ -1,0 +1,39 @@
+:root {
+  --bg: #fbf7fa;
+  --surface: #ffffff;
+  --ink: #2e2438;
+  --ink-soft: #6f6280;
+  --rose: #e8728c;
+  --rose-deep: #c94f6c;
+  --lilac: #a78bd6;
+  --lavender: #c9b8ec;
+  --lavender-soft: #f1ebfb;
+  --line: #ece3f2;
+  --good: #6fb98f;
+  --shadow: 0 8px 24px rgba(120, 80, 140, 0.10);
+  --radius: 18px;
+  font-family: "Outfit", "Segoe UI", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root { height: 100%; }
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at 10% 0%, #f6e9f4 0%, transparent 45%),
+    radial-gradient(circle at 90% 10%, #ece2fb 0%, transparent 40%),
+    var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+button { font-family: inherit; cursor: pointer; }
+input, select { font-family: inherit; }
+
+::selection { background: var(--lavender); color: white; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}

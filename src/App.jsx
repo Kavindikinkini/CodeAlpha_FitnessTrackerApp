@@ -1,14 +1,19 @@
-import { Footprints, Flame, Dumbbell, Activity } from "lucide-react";
+import { useState } from "react";
+import { Footprints, Flame, Dumbbell, Activity, Settings, Sparkles } from "lucide-react";
 import "./App.css";
 import { useFitnessData } from "./lib/useFitnessData";
 import ProgressRing from "./components/ProgressRing";
 import WeeklyChart from "./components/WeeklyChart";
 import LogForm from "./components/LogForm";
 import ActivityList from "./components/ActivityList";
+import SettingsModal from "./components/SettingsModal";
 
 export default function App() {
-  const { todayEntries, todayTotals, weekly, weekTotals, addEntry, deleteEntry, goals } =
-    useFitnessData();
+  const {
+    todayEntries, todayTotals, weekly, weekTotals, streak,
+    addEntry, updateEntry, deleteEntry, goals, updateGoals,
+  } = useFitnessData();
+  const [showSettings, setShowSettings] = useState(false);
 
   const todayLabel = new Date().toLocaleDateString(undefined, {
     weekday: "long", month: "long", day: "numeric",
@@ -19,12 +24,22 @@ export default function App() {
       <header className="app-header">
         <div className="brand">
           <span className="brand-mark">
-            <Activity size={20} strokeWidth={2.6} />
+            <Activity size={22} strokeWidth={2.6} />
           </span>
           <div>
             <div className="brand-name">Pulse</div>
             <div className="brand-sub">{todayLabel}</div>
           </div>
+        </div>
+        <div className="header-actions">
+          {streak > 0 && (
+            <div className="streak-badge">
+              <Sparkles size={14} /> {streak} day{streak === 1 ? "" : "s"}
+            </div>
+          )}
+          <button className="icon-btn settings-btn" onClick={() => setShowSettings(true)} aria-label="Edit goals">
+            <Settings size={18} />
+          </button>
         </div>
       </header>
 
@@ -56,30 +71,36 @@ export default function App() {
           />
         </section>
 
-        <section className="panel">
-          <div className="panel-head">
-            <h2>This week</h2>
-            <span className="panel-meta">
-              {weekTotals.steps.toLocaleString()} steps · {weekTotals.calories.toLocaleString()} kcal · {weekTotals.minutes} min
-            </span>
-          </div>
-          <WeeklyChart data={weekly} />
-        </section>
+        <div className="two-col">
+          <section className="panel">
+            <div className="panel-head">
+              <h2>This week</h2>
+              <span className="panel-meta">
+                {weekTotals.steps.toLocaleString()} steps · {weekTotals.calories.toLocaleString()} kcal · {weekTotals.minutes} min
+              </span>
+            </div>
+            <WeeklyChart data={weekly} />
+          </section>
 
-        <section className="panel">
-          <LogForm onAdd={addEntry} />
-        </section>
+          <section className="panel">
+            <LogForm onAdd={addEntry} />
+          </section>
+        </div>
 
         <section className="panel">
           <div className="panel-head">
             <h2>Today's log</h2>
             <span className="panel-meta">{todayEntries.length} {todayEntries.length === 1 ? "entry" : "entries"}</span>
           </div>
-          <ActivityList entries={todayEntries} onDelete={deleteEntry} />
+          <ActivityList entries={todayEntries} onDelete={deleteEntry} onUpdate={updateEntry} />
         </section>
       </main>
 
       <footer className="app-footer">Data is stored locally on this device.</footer>
+
+      {showSettings && (
+        <SettingsModal goals={goals} onSave={updateGoals} onClose={() => setShowSettings(false)} />
+      )}
     </div>
   );
 }

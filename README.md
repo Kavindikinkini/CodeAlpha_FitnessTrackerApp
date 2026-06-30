@@ -3,15 +3,17 @@
 A CodeAlpha App Development internship project (Task 3). Built with React + Vite.
 
 ## Features
-- Log daily fitness activities: type, minutes, calories burned, and steps
-- Dashboard with animated progress rings for steps, calories, and workouts vs. daily goals
-- 7-day weekly steps chart (Recharts)
-- Today's activity log with delete support
+- **Dashboard** — log activities, see today's progress rings (steps/calories/workouts), weekly chart, streak badge
+- **History** — full activity log grouped by day, filterable by activity type, inline edit/delete
+- **Stats** — 30-day steps trend, lifetime totals, activity-type breakdown
+- **Goals** — customize daily targets, load sample data, clear all data
+- Multi-page navigation: sidebar on desktop, bottom tab bar on mobile (React Router)
 - Data persisted locally via `localStorage` — no backend required
-- Clean, mobile-first, responsive UI
+- Built-in dummy data generator for previewing the app with realistic activity history
 
 ## Tech stack
 - React 19 + Vite
+- React Router (multi-page navigation)
 - Recharts (charts)
 - lucide-react (icons)
 - Plain CSS with custom design tokens (no UI framework)
@@ -32,14 +34,22 @@ npm run preview
 ## Project structure
 ```
 src/
-  App.jsx                 # Main dashboard layout
+  App.jsx                 # Router shell (nav + routes)
   App.css                 # Design system + styles
-  lib/useFitnessData.js   # localStorage-backed data hook (entries, totals, weekly stats)
+  lib/
+    useFitnessData.js     # localStorage-backed data hook
+    seedData.js            # Dummy data generator
+  pages/
+    Dashboard.jsx          # Today's overview + log form
+    HistoryPage.jsx        # Full log, grouped by date, filterable
+    StatsPage.jsx           # 30-day trend, totals, breakdown
+    GoalsPage.jsx           # Goal settings + sample data / reset
   components/
-    ProgressRing.jsx      # Animated circular goal progress
-    WeeklyChart.jsx       # 7-day bar chart of steps
-    LogForm.jsx           # Form to add a new activity entry
-    ActivityList.jsx      # Today's logged activities with delete
+    Nav.jsx                # Sidebar (desktop) / bottom tabs (mobile)
+    ProgressRing.jsx        # Animated circular goal progress
+    WeeklyChart.jsx          # 7-day bar chart (steps/calories/minutes)
+    LogForm.jsx              # Form to add a new activity entry
+    ActivityList.jsx          # Activity list with inline edit/delete
 ```
 
 ## Notes

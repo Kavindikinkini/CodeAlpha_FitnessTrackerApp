@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { generateDummyEntries } from "./seedData";
 
 const ENTRIES_KEY = "pulse_fitness_entries_v1";
 const GOALS_KEY = "pulse_fitness_goals_v1";
@@ -64,6 +65,14 @@ export function useFitnessData() {
     setGoals((prev) => ({ ...prev, ...patch }));
   }, []);
 
+  const loadSampleData = useCallback(() => {
+    setEntries((prev) => [...generateDummyEntries(), ...prev]);
+  }, []);
+
+  const clearAllData = useCallback(() => {
+    setEntries([]);
+  }, []);
+
   const today = todayKey();
   const todayEntries = useMemo(
     () => entries.filter((e) => e.date === today),
@@ -103,6 +112,27 @@ export function useFitnessData() {
     });
   }, [entries]);
 
+  const monthly = useMemo(() => {
+    const days = lastNDays(30);
+    return days.map((date) => {
+      const dayEntries = entries.filter((e) => e.date === date);
+      const totals = dayEntries.reduce(
+        (acc, e) => ({
+          steps: acc.steps + (Number(e.steps) || 0),
+          calories: acc.calories + (Number(e.calories) || 0),
+          minutes: acc.minutes + (Number(e.minutes) || 0),
+        }),
+        { steps: 0, calories: 0, minutes: 0 }
+      );
+      const d = new Date(date);
+      return {
+        date,
+        label: d.toLocaleDateString(undefined, { day: "numeric", month: "short" }),
+        ...totals,
+      };
+    });
+  }, [entries]);
+
   const weekTotals = useMemo(
     () =>
       weekly.reduce(
@@ -115,6 +145,16 @@ export function useFitnessData() {
       ),
     [weekly]
   );
+
+  const typeBreakdown = useMemo(() => {
+    const counts = {};
+    entries.forEach((e) => {
+      counts[e.type] = (counts[e.type] || 0) + 1;
+    });
+    return Object.entries(counts)
+      .map(([type, count]) => ({ type, count }))
+      .sort((a, b) => b.count - a.count);
+  }, [entries]);
 
   const streak = useMemo(() => {
     const byDate = {};
@@ -147,13 +187,17 @@ export function useFitnessData() {
     todayEntries,
     todayTotals,
     weekly,
+    monthly,
     weekTotals,
+    typeBreakdown,
     streak,
     addEntry,
     updateEntry,
     deleteEntry,
     goals,
     updateGoals,
+    loadSampleData,
+    clearAllData,
   };
 }
 
